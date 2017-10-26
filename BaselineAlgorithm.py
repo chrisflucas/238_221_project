@@ -1,18 +1,21 @@
 import random
 from datetime import date, datetime
+import data
 
 #import util, math
 #from collections import defaultdict
 
 
-Class BaselineAlgorithm():
+class BaselineAlgorithm:
 
     def __init__(self, start_state, initial_investment, stock_price_dict):
+        self.filepath = '/Users/harper/Desktop/Fall 2017/Bitcoin Project/238_221_project/bitcoin_dataset.csv'
 		self.actions = ["Buy", "Sell", "Hold"]
 		self.start = start_state #date object
 		self.total_reward = 0
 		self.investment = initial_investment
 		self.stock_prices = stock_price_dict
+        self.data = DataUtil().read_file(filepath)
 
 
 	def startState(self):
@@ -47,10 +50,3 @@ Class BaselineAlgorithm():
 
 	def investmentRemaining(self):
 		return self.investment
-
-
-
-
-
-
-
