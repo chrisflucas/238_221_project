@@ -6,6 +6,7 @@ import sys, os
 '''
 class DataUtil():
 	def __init__(self):
+		self.data = {}
 		return None
 	'''
 		Takes in and parses a CSV file.
@@ -13,24 +14,22 @@ class DataUtil():
 			rows - list of dicts, each dict represents a 
 			row of data and maps from column names to data point value
 	'''
-	def read_file(self, infile, extract_school_names=False):
-		def _format_row(r):
-			return r.replace('$','').replace(',','').replace('.00', '')
-
-		def _format_col(c):
-			return c.replace('\"', '').replace(' ','-').lower()
-
-		columns = []
-		rows = []
-		with open(infile, 'rb') as csvfile:
-			reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+	def read_file(self, filePath):
+		with open(filePath) as f:
+			reader = csv.reader(f)
+			rowNum = 0
+			headers = []
+			dataMap = {}
 			for row in reader:
-				if not columns: columns = [_format_col(c) for c in row]
-				else:
-					rows.append({columns[i]: _format_row(c) for i, c in enumerate(row)})
-
-		if extract_school_names: return self.extract_school_names(rows)
-		return rows
+				rowNum+=1
+				if rowNum == 1:
+					for x in range(0, len(row)): headers.append(row[x])
+					continue
+				date = row[0].split()
+				curDate = date[0]
+				self.data[row[0]] = {}
+				for x in range(1, len(row)):
+					self.data[row[0]][headers[x]] = row[x]
 
 	'''
 		Extract school name from data and use that as a key that maps
