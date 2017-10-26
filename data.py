@@ -1,6 +1,7 @@
 import csv
 import sys, os
 import datetime
+
 '''
 	Wrapper class for data reading, handling, etc.
 '''
@@ -28,9 +29,10 @@ class DataUtil():
 				date = row[0].split()
 				curDate = date[0].split('-')
 				dtObject = datetime.date(int(curDate[0]), int(curDate[1]), int(curDate[2]))
-				self.data[dtObject] = {}
+				dataMap[dtObject] = {}
 				for x in range(1, len(row)):
-					self.data[dtObject][headers[x]] = row[x]
+					dataMap[dtObject][headers[x]] = row[x]
+		return dataMap
 
 	'''
 		Extract school name from data and use that as a key that maps
@@ -42,7 +44,3 @@ class DataUtil():
 if __name__ == '__main__':
 	data_rows = DataUtil()
 	data_rows.read_file('/Users/charlesvidrine/Documents/CS 221/project/238_221_project/bitcoin_dataset.csv')
-
-
-
-
