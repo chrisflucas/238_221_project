@@ -20,7 +20,8 @@ class DataUtil():
 			reader = csv.reader(f)
 			rowNum = 0
 			headers = []
-			dataMap = {}
+			testdataMap = {}
+			trainDataMap = {}
 			for row in reader:
 				rowNum+=1
 				if rowNum == 1:
@@ -29,14 +30,21 @@ class DataUtil():
 				date = row[0].split()
 				curDate = date[0].split('-')
 				dtObject = datetime.date(int(curDate[0]), int(curDate[1]), int(curDate[2]))
-				dataMap[dtObject] = {}
+				if rowNum > 2000:
+					trainDataMap[dtObject] = {}
+				else:
+					testdataMap[dtObject] = {}
+				
 				for x in range(1, len(row)):
 					try:
 						float(row[x])
-						dataMap[dtObject][headers[x]] = float(row[x])
+						if rowNum > 2000:
+							trainDataMap[dtObject][headers[x]] = float(row[x])
+						else:
+							testdataMap[dtObject][headers[x]] = float(row[x])
 					except ValueError:
 						print row[x]
-		return dataMap
+		return testdataMap, trainDataMap
 
 	'''
 		Extract school name from data and use that as a key that maps

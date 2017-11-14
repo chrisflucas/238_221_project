@@ -28,7 +28,6 @@ class BaselineAlgorithm:
 			return random.choice(["Sell", "Hold"])
 
 
-
 	def succAndProbReward(self, state, action):
 		stock_price = self.stock_prices[state]['btc_market_price']
 		newState = state + timedelta(days=1)

@@ -156,7 +156,7 @@ class ModelBasedRL():
 
 		self.transition_probabilites = final_dict
 		self.rewards = reward_dict
-		print self.rewards
+		#print self.rewards
 		self.value, self.policy = self.valueIteration()
 
 	# Start state => (Price of bitcoin at Day 1, None)
@@ -197,19 +197,66 @@ class ModelBasedRL():
 						max_action = a
 				U[s] = max_value
 				pi[s] = max_action
-			if Unew == U:
-				break
+			if Unew == U: break
 		return U, pi
 
+	def test(self, test_rows):
+		
+
+		def _discretize(num):
+			num = float(num)
+			return round(num, 1)
+
+		def _getAction(state):
+			if state not in self.policy: return ['HOLD']
+			return self.policy[state]
+
+		def _succAndProbReward():
+			investment = 1000000
+			made_money = True
+			total_reward = 0.0
+
+			for tr in test_rows:
+
+				stock_price = test_rows[tr]['btc_market_price']
+				state = (_discretize(stock_price), made_money)
+
+				action = _getAction(state)
+
+				if action == "BUY":
+					investment -= stock_price
+					total_reward -= stock_price
+					reward = stock_price * -1
+
+				elif action == "SELL":
+					investment += stock_price
+					total_reward += stock_price
+					reward = stock_price
+			return total_reward
+		return _succAndProbReward()
 
 if __name__ == '__main__':
+
+
+	# def _reformat_test(test):
+	# 	new_map = {}
+	# 	for k, v in test.iteritems():
+	# 		new_key = round(v['btc_market_price'],1)
+	# 		new_map[new_key] = new_key
+	# 	return new_map
+
+
 	filepath = 'bitcoin_dataset.csv'
 	investment = 1000000
 	dt = data.DataUtil()
-	d = dt.read_file(filepath)
-	first_day = min(d)
-	last_day = max(d)
+	train, test = dt.read_file(filepath)
+	first_day = min(test)
+	last_day = max(train)
 
-	rl = ModelBasedRL(first_day, last_day, investment, d)
-	rl.start_state()
+	#test = _reformat_test(test)
+
+	rl = ModelBasedRL(first_day, last_day, investment, train)
+	reward = rl.test(test)
+	print reward
+	
 
