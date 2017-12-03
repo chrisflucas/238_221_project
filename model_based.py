@@ -266,7 +266,7 @@ if __name__ == '__main__':
 			max_reward = reward
 			max_reward_chain = reward_chain
 
-	with open('Reward_Data_Model_Based_Google.csv', 'w') as dataFile:
+	with open('Reward_Data_Model_Based.csv', 'w') as dataFile:
 		fileWriter = csv.writer(dataFile)
 		for row in max_reward_chain:
 			fileWriter.writerow(row)
