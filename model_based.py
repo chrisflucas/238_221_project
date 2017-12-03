@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-import data, random, collections
+import data, random, collections, csv
 
 class ModelBasedRL():
 	def __init__(self, start_date, last_date, initial_investment, stock_price_dict):
@@ -115,7 +115,6 @@ class ModelBasedRL():
 				state_action_state_prime_dict[(current_state, 'HOLD', (tomorrow_price, False))] += 1
 				state_action_state_prime_dict[(current_state2, 'HOLD', (tomorrow_price, False))] += 1
 
-		print 'FINISHED FIRST ITER OVER DATA'
 
 		final_dict = collections.defaultdict(dict)
 		for i in range(len(dates)-1):
@@ -208,7 +207,8 @@ class ModelBasedRL():
 			return round(num, 1)
 
 		def _getAction(state):
-			if state not in self.policy: return ['HOLD']
+			if state not in self.policy: return 'HOLD'
+			if random.uniform(0,1) < 0.2: return 'HOLD'
 			return self.policy[state]
 
 		def _succAndProbReward():
@@ -232,7 +232,10 @@ class ModelBasedRL():
 					investment += stock_price
 					total_reward += stock_price
 					reward = stock_price
-			return total_reward
+				total_rewards.append([action, total_reward])
+			return total_reward, total_rewards
+
+		total_rewards = []
 		return _succAndProbReward()
 
 if __name__ == '__main__':
@@ -247,16 +250,25 @@ if __name__ == '__main__':
 
 
 	filepath = 'bitcoin_dataset.csv'
-	investment = 1000000
+	investment = 10000
 	dt = data.DataUtil()
 	train, test = dt.read_file(filepath)
 	first_day = min(test)
 	last_day = max(train)
 
 	#test = _reformat_test(test)
-
+	max_reward_chain = None
+	max_reward = float('-inf')
 	rl = ModelBasedRL(first_day, last_day, investment, train)
-	reward = rl.test(test)
-	print reward
+	for _ in range(10000):
+		reward, reward_chain = rl.test(test)
+		if reward > max_reward:
+			max_reward = reward
+			max_reward_chain = reward_chain
+
+	with open('Reward_Data_Model_Based_Google.csv', 'w') as dataFile:
+		fileWriter = csv.writer(dataFile)
+		for row in max_reward_chain:
+			fileWriter.writerow(row)
 	
 
